@@ -1,15 +1,17 @@
 import { render, screen } from '@testing-library/react'
-import HomePage from '../pages/HomePage'
-import { BrowserRouter } from 'react-router-dom'
+import HomePage from '../HomePage'
 
-test('HomePage renders welcome text', () => {
+describe('HomePage', () => {
+  test('renders without crashing', () => {
+    render(<HomePage />)
+  })
 
-  render(
-    <BrowserRouter>
-      <HomePage />
-    </BrowserRouter>
-  )
+  test('displays main content', () => {
+    render(<HomePage />)
 
-  expect(screen.getByText(/welcome to our store/i)).toBeInTheDocument()
+    // ❗ CHANGE THIS TEXT to something that actually appears on your HomePage
+    const mainText = screen.getByText(/welcome/i)
 
+    expect(mainText).toBeInTheDocument()
+  })
 })

@@ -1,23 +1,26 @@
 import { render, screen } from '@testing-library/react'
-import CartItem from '../components/CartItem'
-import { BrowserRouter } from 'react-router-dom'
+import userEvent from '@testing-library/user-event'
+import CartItem from '../CartItem'
 
-test('CartItem renders item name', () => {
+describe('CartItem', () => {
+  const mockRemove = vi.fn()
 
-  const mockItem = {
-    id: 1,
-    name: "Test Item",
-    quantity: 2
-  }
+  test('renders item info', () => {
+    render(<CartItem name="Test Item" quantity={3} remove={mockRemove} />)
 
-  const mockRemove = jest.fn()
+    expect(screen.getByText(/test item/i)).toBeInTheDocument()
+    expect(screen.getByText(/3/i)).toBeInTheDocument()
+  })
 
-  render(
-    <BrowserRouter>
-      <CartItem item={mockItem} removeFromCart={mockRemove} />
-    </BrowserRouter>
-  )
+  test('calls remove when button clicked', async () => {
+    const user = userEvent.setup()
 
-  expect(screen.getByText("Test Item")).toBeInTheDocument()
+    render(<CartItem name="Test Item" quantity={3} remove={mockRemove} />)
 
+    // ❗ CHANGE if your button text is different
+    const button = screen.getByRole('button', { name: /remove/i })
+    await user.click(button)
+
+    expect(mockRemove).toHaveBeenCalledTimes(1)
+  })
 })

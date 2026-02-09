@@ -1,27 +1,64 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import ProductCard from '../components/ProductCard'
-import { BrowserRouter } from 'react-router-dom'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import ProductCard from '../ProductCard'
 
-test('ProductCard renders and button works', () => {
-
+describe('ProductCard', () => {
   const mockProduct = {
-    id: 1,
-    name: "Test Product",
-    price: 99.99
+    name: 'Test Product',
+    price: 19.99,
   }
 
-  const mockAddToCart = jest.fn()
+  const mockAddToCart = vi.fn()
 
-  render(
-    <BrowserRouter>
-      <ProductCard product={mockProduct} addToCart={mockAddToCart} />
-    </BrowserRouter>
-  )
+  test('renders without crashing', () => {
+    render(
+      <ProductCard
+        name={mockProduct.name}
+        price={mockProduct.price}
+        addToCart={mockAddToCart}
+      />
+    )
+  })
 
-  expect(screen.getByText("Test Product")).toBeInTheDocument()
+  test('displays product name and price', () => {
+    render(
+      <ProductCard
+        name={mockProduct.name}
+        price={mockProduct.price}
+        addToCart={mockAddToCart}
+      />
+    )
 
-  fireEvent.click(screen.getByText(/add to cart/i))
+    expect(screen.getByText(/test product/i)).toBeInTheDocument()
+    expect(screen.getByText(/19\.99/i)).toBeInTheDocument()
+  })
 
-  expect(mockAddToCart).toHaveBeenCalled()
+  test('has an Add to Cart button', () => {
+    render(
+      <ProductCard
+        name={mockProduct.name}
+        price={mockProduct.price}
+        addToCart={mockAddToCart}
+      />
+    )
 
+    expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument()
+  })
+
+  test('calls addToCart when clicked', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <ProductCard
+        name={mockProduct.name}
+        price={mockProduct.price}
+        addToCart={mockAddToCart}
+      />
+    )
+
+    const button = screen.getByRole('button', { name: /add to cart/i })
+    await user.click(button)
+
+    expect(mockAddToCart).toHaveBeenCalledTimes(1)
+  })
 })
